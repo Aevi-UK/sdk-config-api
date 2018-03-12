@@ -1,0 +1,47 @@
+ext {
+
+    androidBuildVersion = "27.0.3"
+    projectTargetSdkVersion = 26
+    projectMinSdkVersion = 21
+
+    supportLibrary = '27.0.2'
+
+    okioVersion = '1.13.0'
+    gsonVersion = '2.8.0'
+    rxJavaVersion = '2.1.2'
+    printApiVersion = '1.0.1'
+    jsonConverterVersion = '1.0.0'
+
+    rxMessengerVersion = '3.0.1'
+
+    junitVersion = '4.12'
+    hamcrestVersion = '1.3'
+    mockitoVersion = '1.10.19'
+    assertJVersion = '2.7.0'
+    androidMockableVersion = '26'
+    robolectricVersion = '3.3.2'
+
+    presentationDependencies = [
+            support  : "com.android.support:support-v4:$supportLibrary",
+            appCompat: "com.android.support:appcompat-v7:$supportLibrary",
+    ]
+
+    apiDependencies = [
+            androidMockable: "com.google:android-mockable-default-values:$androidMockableVersion",
+            rxJava         : "io.reactivex.rxjava2:rxjava:$rxJavaVersion",
+            rxMessenger    : "com.aevi.android:rxmessenger:$rxMessengerVersion",
+            gson           : "com.google.code.gson:gson:$gsonVersion",
+            okio           : "com.squareup.okio:okio:$okioVersion",
+            jsonConverter  : "com.aevi.util:json-converter:$jsonConverterVersion"
+    ]
+
+    testDependencies = [
+            junit       : "junit:junit:$junitVersion",
+            hamcrestCore: "org.hamcrest:hamcrest-core:$hamcrestVersion",
+            hamcrestInt : "org.hamcrest:hamcrest-integration:$hamcrestVersion",
+            hamcrestLib : "org.hamcrest:hamcrest-library:$hamcrestVersion",
+            mockito     : "org.mockito:mockito-core:$mockitoVersion",
+            assertJ     : "org.assertj:assertj-core:$assertJVersion",
+            robolectric : "org.robolectric:robolectric:$robolectricVersion"
+    ]
+}

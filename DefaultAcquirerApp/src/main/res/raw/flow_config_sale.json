@@ -1,0 +1,17 @@
+{
+  "flowApps": {
+    "SPLIT": [
+      {
+        "capabilities": [
+          "splitBasket"
+        ],
+        "deviceId": "local",
+        "executeInBackground": false,
+        "id": "com.aevi.partpayapp",
+        "launchUri": "com.aevi.partpayapp/com.aevi.partpayapp.PartPayService",
+        "name": "Part Pay"
+      }
+    ]
+  },
+  "type": "sale"
+}

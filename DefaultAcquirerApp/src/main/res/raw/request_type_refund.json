@@ -1,0 +1,17 @@
+{
+  "stages": [
+    {
+      "flowAppType": "NONE",
+      "name": "VALIDATE"
+    },
+    {
+      "flowAppType": "NONE",
+      "name": "TRANSACTION_PROCESSING"
+    },
+    {
+      "flowAppType": "NONE",
+      "name": "RECORD"
+    }
+  ],
+  "type": "refund"
+}

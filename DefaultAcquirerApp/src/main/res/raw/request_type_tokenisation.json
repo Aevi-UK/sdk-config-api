@@ -1,0 +1,9 @@
+{
+  "stages": [
+    {
+      "flowAppType": "NONE",
+      "name": "PAYMENT_CARD_READING"
+    }
+  ],
+  "type": "tokenisation"
+}

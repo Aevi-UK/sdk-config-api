@@ -1,0 +1,50 @@
+{
+  "stages": [
+    {
+      "flowAppType": "NONE",
+      "name": "VALIDATE"
+    },
+    {
+      "flowAppType": "SINGLE",
+      "name": "PRE_FLOW"
+    },
+    {
+      "flowAppType": "SINGLE",
+      "innerFlow": {
+        "stages": [
+          {
+            "flowAppType": "MULTIPLE",
+            "name": "PRE_TRANSACTION"
+          },
+          {
+            "flowAppType": "NONE",
+            "name": "PAYMENT_CARD_READING"
+          },
+          {
+            "flowAppType": "MULTIPLE",
+            "name": "POST_CARD_READING"
+          },
+          {
+            "flowAppType": "NONE",
+            "name": "TRANSACTION_PROCESSING"
+          },
+          {
+            "flowAppType": "MULTIPLE",
+            "name": "POST_TRANSACTION"
+          }
+        ],
+        "type": "transaction"
+      },
+      "name": "SPLIT"
+    },
+    {
+      "flowAppType": "SINGLE",
+      "name": "POST_FLOW"
+    },
+    {
+      "flowAppType": "NONE",
+      "name": "RECORD"
+    }
+  ],
+  "type": "sale"
+}

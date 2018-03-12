@@ -1,0 +1,78 @@
+apply plugin: 'com.android.application'
+
+apply from: "../artifacts.gradle"
+apply from: "../publish-repo.gradle"
+apply from: "../publish-repo-android.gradle"
+
+ext.applicationName = "DefaultAcquirerApp"
+ext.artifactIdPrefix = "default-acquirer-app"
+ext.artifactGroupId = "com.aevi.sdk.config"
+
+android {
+    compileSdkVersion projectTargetSdkVersion
+    buildToolsVersion "${androidBuildVersion}"
+
+    defaultConfig {
+        applicationId "com.aevi.sdk.config.default"
+        minSdkVersion projectMinSdkVersion
+        targetSdkVersion projectTargetSdkVersion
+        versionCode apiVersionCode
+        versionName "${apiVersion}"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file("${keystore_path}")
+            storePassword "${keystore_key_password}"
+            keyAlias "application"
+            keyPassword "${keystore_key_password}"
+        }
+        release {
+            storeFile file("${keystore_path}")
+            storePassword "${keystore_key_password}"
+            keyAlias "application"
+            keyPassword "${keystore_key_password}"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+}
+
+dependencies {
+    implementation project(':config-api')
+    implementation project(':api-constants')
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation(presentationDependencies.support) { force = true }
+    implementation(presentationDependencies.appCompat) { force = true }
+
+    implementation apiDependencies.rxJava
+    implementation apiDependencies.okio
+
+    testImplementation testDependencies.junit
+    testImplementation testDependencies.mockito
+    testImplementation testDependencies.assertJ
+    testImplementation testDependencies.robolectric
+}

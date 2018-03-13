@@ -31,11 +31,11 @@ deployment:
     feature:
         branch: /.*feature.*/
         commands:
-            - ./gradlew javadoc build copyApiLibs
+            - ./gradlew javadoc build
     development:
         branch: develop
         commands:
-            - ./gradlew javadoc build publishApiJarPublicationToSnapshotRepository copyApiLibs
+            - ./gradlew javadoc build publishApiJarPublicationToSnapshotRepository
     production:
         branch: master
         commands:

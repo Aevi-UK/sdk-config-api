@@ -62,7 +62,6 @@ android {
 
 dependencies {
     implementation project(':config-api')
-    implementation project(':api-constants')
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation(presentationDependencies.support) { force = true }

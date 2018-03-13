@@ -11,12 +11,12 @@ import java.nio.charset.Charset;
 
 import okio.Okio;
 
-import static com.aevi.sdk.config.constants.FlowConstants.FLOW_CONFIGS;
-import static com.aevi.sdk.config.constants.FlowConstants.REQUEST_TYPE_CONFIGS;
-
 public class DefaultConfigProvider extends BaseConfigProvider {
 
     private static final String TAG = DefaultConfigProvider.class.getSimpleName();
+
+    private static final String FLOW_CONFIGS = "flowConfigs";
+    private static final String REQUEST_TYPE_CONFIGS = "requestTypeConfigs";
 
     @Override
     public String[] getConfigKeys() {

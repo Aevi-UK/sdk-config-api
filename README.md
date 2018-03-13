@@ -1,1 +1,2 @@
-acquirer-api
+# Configuration API
+

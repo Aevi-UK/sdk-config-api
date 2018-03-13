@@ -13,6 +13,11 @@ dependencies {
     implementation apiDependencies.rxJava
     implementation apiDependencies.rxMessenger
     implementation apiDependencies.jsonConverter
+
+    testImplementation apiDependencies.androidMockable
+    testImplementation testDependencies.junit
+    testImplementation testDependencies.mockito
+    testImplementation testDependencies.assertJ
 }
 
 javadoc {

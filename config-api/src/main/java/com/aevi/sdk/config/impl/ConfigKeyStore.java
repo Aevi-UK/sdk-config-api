@@ -1,6 +1,4 @@
-package com.aevi.sdk.config.scanner;
-
-import com.aevi.sdk.config.model.ConfigApp;
+package com.aevi.sdk.config.impl;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +32,7 @@ class ConfigKeyStore {
         }
     }
 
-    public Set<String> getKeys() {
+    Set<String> getKeys() {
         return keys.keySet();
     }
 

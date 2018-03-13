@@ -1,7 +1,6 @@
-package com.aevi.sdk.config.scanner;
+package com.aevi.sdk.config.impl;
 
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -18,16 +17,13 @@ import io.reactivex.ObservableOnSubscribe;
 abstract class BaseAppScanner<T> {
 
     private static final String TAG = BaseAppScanner.class.getSimpleName();
-    private static final String APP_LABEL = "app-label";
 
     private final List<String> packageIgnoreList;
-    private final Context context;
     private final PackageManager pm;
 
-    BaseAppScanner(Context context, List<String> packageIgnoreList) {
-        this.context = context;
+    BaseAppScanner(PackageManager pm, List<String> packageIgnoreList) {
         this.packageIgnoreList = packageIgnoreList;
-        this.pm = context.getPackageManager();
+        this.pm = pm;
     }
 
     public abstract Observable<T> scan();
@@ -56,10 +52,14 @@ abstract class BaseAppScanner<T> {
     private void scanForContentProviders(Intent intent, Emitter<ResolveInfo> emitter) {
         Log.d(TAG, String.format("Scanning for content providers with action [%s]", intent.getAction()));
         List<ResolveInfo> resolveInfoList = pm.queryIntentContentProviders(intent, PackageManager.GET_META_DATA | PackageManager.GET_RESOLVED_FILTER);
-        for (ResolveInfo resolveInfo : resolveInfoList) {
-            if (resolveInfo.providerInfo != null && shouldIncludePackage(resolveInfo.providerInfo.packageName)) {
-                emitter.onNext(resolveInfo);
+        if (resolveInfoList != null) {
+            for (ResolveInfo resolveInfo : resolveInfoList) {
+                if (resolveInfo.providerInfo != null && shouldIncludePackage(resolveInfo.providerInfo.packageName)) {
+                    emitter.onNext(resolveInfo);
+                }
             }
+        } else {
+            emitter.onComplete();
         }
     }
 

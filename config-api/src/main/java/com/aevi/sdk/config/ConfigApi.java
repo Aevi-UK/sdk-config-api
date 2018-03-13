@@ -2,7 +2,8 @@ package com.aevi.sdk.config;
 
 import android.content.Context;
 
-import com.aevi.sdk.config.scanner.ConfigApiImpl;
+import com.aevi.sdk.config.impl.Component;
+import com.aevi.sdk.config.impl.ConfigApiImpl;
 
 public final class ConfigApi {
 
@@ -13,6 +14,7 @@ public final class ConfigApi {
      * @return An instance of {@link ConfigClient}
      */
     public static ConfigClient getConfigClient(Context context) {
-        return new ConfigApiImpl(context);
+        Component component = new Component(context);
+        return new ConfigApiImpl(component);
     }
 }

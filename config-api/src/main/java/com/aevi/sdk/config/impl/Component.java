@@ -1,8 +1,8 @@
 package com.aevi.sdk.config.impl;
 
 import android.content.Context;
-
 import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Consumer;
 
 public class Component {
 
@@ -16,6 +16,12 @@ public class Component {
         this.configKeyStore = new ConfigKeyStore();
         this.configScanner = new ConfigScanner(context);
         this.appInstallOrUpdateReceiver = new AppInstallOrUpdateReceiver(configKeyStore, configScanner);
+        configScanner.scan().subscribe(new Consumer<ConfigApp>() {
+            @Override
+            public void accept(ConfigApp configApp) {
+                configKeyStore.save(configApp);
+            }
+        });
     }
 
     @NonNull

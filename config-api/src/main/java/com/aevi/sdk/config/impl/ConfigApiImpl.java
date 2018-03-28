@@ -1,10 +1,10 @@
 package com.aevi.sdk.config.impl;
 
+import android.content.pm.PackageManager;
 import com.aevi.sdk.config.ConfigClient;
+import io.reactivex.Observable;
 
 import java.util.Set;
-
-import io.reactivex.Observable;
 
 public final class ConfigApiImpl implements ConfigClient {
 
@@ -35,6 +35,20 @@ public final class ConfigApiImpl implements ConfigClient {
             return component.getConfigScanner().getArrayValue(app.getAuthority(), key);
         }
         return new String[0];
+    }
+
+    @Override
+    public ConfigResource getConfigResource(String key, ConfigResource defaultValue) {
+        ConfigApp app = component.getConfigKeyStore().getApp(key);
+        if (app != null) {
+            try {
+                return new ConfigResource(component.getConfigScanner().getIntValue(app.getAuthority(), key),
+                        component.getContext().getPackageManager().getResourcesForApplication(app.getPackageName()));
+            } catch (PackageManager.NameNotFoundException e) {
+                // ...if the package has been uninstalled in the meanwhile
+            }
+        }
+        return defaultValue;
     }
 
     @Override

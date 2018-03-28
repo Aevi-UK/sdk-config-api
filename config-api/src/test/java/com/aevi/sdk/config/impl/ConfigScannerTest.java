@@ -8,7 +8,7 @@ import android.content.pm.ProviderInfo;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
-
+import io.reactivex.observers.TestObserver;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -16,21 +16,12 @@ import org.mockito.Mock;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.observers.TestObserver;
-
-import static com.aevi.sdk.config.provider.BaseConfigProvider.CONFIG_VALUE;
-import static com.aevi.sdk.config.provider.BaseConfigProvider.CONFIG_VALUES;
-import static com.aevi.sdk.config.provider.BaseConfigProvider.METHOD_GET;
-import static com.aevi.sdk.config.provider.BaseConfigProvider.METHOD_GET_ARRAY;
-import static com.aevi.sdk.config.provider.BaseConfigProvider.METHOD_GET_KEYS;
+import static com.aevi.sdk.config.provider.BaseConfigProvider.*;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class ConfigScannerTest {
@@ -121,7 +112,7 @@ public class ConfigScannerTest {
     @Test
     public void willHandleNullReturnValueArrayFromProvider() {
         setupContentResolver();
-        setupContentProviderReturnArray(METHOD_GET_ARRAY, "supers", CONFIG_VALUES, null);
+        setupContentProviderReturn(METHOD_GET_ARRAY, "supers", CONFIG_VALUES, null);
 
         String[] values = configScanner.getArrayValue("com.the.incredibles", "supers");
         assertThat(values).isEmpty();
@@ -131,24 +122,36 @@ public class ConfigScannerTest {
     public void willReturnArrayValueFromProvider() {
         setupContentResolver();
         String[] returnValues = new String[]{"dash", "elastigirl", "Mr Incredible"};
-        setupContentProviderReturnArray(METHOD_GET_ARRAY, "supers", CONFIG_VALUES, returnValues);
+        setupContentProviderReturn(METHOD_GET_ARRAY, "supers", CONFIG_VALUES, returnValues);
 
         String[] values = configScanner.getArrayValue("com.the.incredibles", "supers");
         assertThat(values).contains(returnValues);
     }
 
-    private void setupContentProviderReturnArray(String method, String key, String returnKey, String[] values) {
-        Bundle b = mock(Bundle.class);
-        when(b.getStringArray(returnKey)).thenReturn(values);
-        when(b.containsKey(returnKey)).thenReturn(true);
-        when(contentResolver.call(any(Uri.class), eq(method), eq(key), any(Bundle.class))).thenReturn(b);
+    @Test
+    public void willReturnIntValueFromProvider() {
+        setupContentResolver();
+        int returnValue = 1234567;
+        setupContentProviderReturn(METHOD_GET_INT, "supers", CONFIG_VALUE, returnValue);
+
+        int value = configScanner.getIntValue("com.the.incredibles", "supers");
+        assertThat(value).isEqualTo(returnValue);
     }
 
-    private void setupContentProviderReturn(String method, String key, String returnKey, String value) {
+    @Test
+    public void willHandleNullReturnIntValueFromProvider() {
+        setupContentResolver();
+        setupContentProviderReturn(METHOD_GET_INT, "supers", CONFIG_VALUES, null);
+
+        int value = configScanner.getIntValue("com.the.incredibles", "supers");
+        assertThat(value).isEqualTo(0);
+    }
+
+    private void setupContentProviderReturn(String method, String key, String returnKey, Object value) {
         Bundle b = mock(Bundle.class);
-        when(b.getString(returnKey)).thenReturn(value);
+        when(b.get(returnKey)).thenReturn(value);
         when(b.containsKey(returnKey)).thenReturn(true);
-        when(contentResolver.call(any(Uri.class), anyString(), anyString(), any(Bundle.class))).thenReturn(b);
+        when(contentResolver.call(any(Uri.class), eq(method), eq(key), any(Bundle.class))).thenReturn(b);
     }
 
     private void setupContentResolver() {

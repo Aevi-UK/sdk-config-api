@@ -2,14 +2,12 @@ package com.aevi.sdk.config;
 
 import android.content.Context;
 import android.util.Log;
-
 import com.aevi.sdk.config.provider.BaseConfigProvider;
+import okio.Okio;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-
-import okio.Okio;
 
 public class DefaultConfigProvider extends BaseConfigProvider {
 
@@ -17,16 +15,27 @@ public class DefaultConfigProvider extends BaseConfigProvider {
 
     private static final String FLOW_CONFIGS = "flowConfigs";
     private static final String REQUEST_TYPE_CONFIGS = "requestTypeConfigs";
+    private static final String WALLPAPER = "wallpaper";
 
     @Override
     public String[] getConfigKeys() {
         Log.d(TAG, "Returning config keys");
-        return new String[]{FLOW_CONFIGS, REQUEST_TYPE_CONFIGS};
+        return new String[]{FLOW_CONFIGS, REQUEST_TYPE_CONFIGS, WALLPAPER};
     }
 
     @Override
     public String getConfigValue(String key) {
         return "";
+    }
+
+    @Override
+    public int getIntConfigValue(String key) {
+        switch (key) {
+            case WALLPAPER:
+                return R.drawable.wallpaper;
+            default:
+                return 0;
+        }
     }
 
     @Override

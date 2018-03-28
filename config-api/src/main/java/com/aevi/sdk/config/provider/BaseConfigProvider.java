@@ -12,6 +12,7 @@ public abstract class BaseConfigProvider extends ContentProvider {
     private static final String TAG = BaseConfigProvider.class.getSimpleName();
 
     public static final String METHOD_GET = "get";
+    public static final String METHOD_GET_INT = "getInt";
     public static final String METHOD_GET_ARRAY = "getArray";
     public static final String METHOD_GET_KEYS = "getKeys";
 
@@ -22,6 +23,8 @@ public abstract class BaseConfigProvider extends ContentProvider {
     public abstract String[] getConfigKeys();
 
     public abstract String getConfigValue(String key);
+
+    public abstract int getIntConfigValue(String key);
 
     public abstract String[] getConfigArrayValue(String key);
 
@@ -38,6 +41,10 @@ public abstract class BaseConfigProvider extends ContentProvider {
                         b.putString(CONFIG_VALUE, getConfigValue(key));
                     }
                     break;
+                case METHOD_GET_INT:
+                    if (key != null) {
+                        b.putInt(CONFIG_VALUE, getIntConfigValue(key));
+                    }
                 case METHOD_GET_ARRAY:
                     if (key != null) {
                         b.putStringArray(CONFIG_VALUES, getConfigArrayValue(key));

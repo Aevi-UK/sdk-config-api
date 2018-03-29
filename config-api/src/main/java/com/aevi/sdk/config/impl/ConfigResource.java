@@ -29,7 +29,7 @@ public final class ConfigResource {
     }
 
     public String asString(String... args) {
-        return resources.getString(id, args);
+        return resources.getString(id, (Object[]) args);
     }
 
     public Drawable asDrawable() {

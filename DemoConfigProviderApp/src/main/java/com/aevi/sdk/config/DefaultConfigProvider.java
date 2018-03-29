@@ -2,12 +2,14 @@ package com.aevi.sdk.config;
 
 import android.content.Context;
 import android.util.Log;
+
 import com.aevi.sdk.config.provider.BaseConfigProvider;
-import okio.Okio;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+
+import okio.Okio;
 
 public class DefaultConfigProvider extends BaseConfigProvider {
 
@@ -46,6 +48,11 @@ public class DefaultConfigProvider extends BaseConfigProvider {
             case REQUEST_TYPE_CONFIGS:
                 return getRequestTypeConfigs();
         }
+        return new String[0];
+    }
+
+    @Override
+    protected String[] getAllowedCallingPackageNames() {
         return new String[0];
     }
 

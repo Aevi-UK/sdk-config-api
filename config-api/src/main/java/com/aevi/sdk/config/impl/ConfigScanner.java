@@ -8,13 +8,14 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+
+import java.util.ArrayList;
+
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
-
-import java.util.ArrayList;
 
 import static com.aevi.sdk.config.provider.BaseConfigProvider.*;
 

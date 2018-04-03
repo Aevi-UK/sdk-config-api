@@ -43,7 +43,7 @@ public final class ConfigApiImpl implements ConfigClient {
         if (app != null) {
             try {
                 return new ConfigResource(component.getConfigScanner().getIntValue(app.getAuthority(), key),
-                        component.getContext().getPackageManager().getResourcesForApplication(app.getPackageName()));
+                        app.getPackageName(), component.getContext().getPackageManager());
             } catch (PackageManager.NameNotFoundException e) {
                 // ...if the package has been uninstalled in the meanwhile
             }

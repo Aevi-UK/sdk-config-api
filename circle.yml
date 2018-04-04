@@ -9,9 +9,8 @@ machine:
 
 dependencies:
   pre:
-    - echo y | android update sdk --no-ui --all --filter tools,platform-tools,android-26
+    - echo y | android update sdk --no-ui --all --filter tools,platform-tools,android-27
     - echo y | android update sdk --no-ui --all --filter build-tools-27.0.3
-    - echo y | android update sdk --no-ui --all --filter android-26
     - echo y | android update sdk --filter "extra-android-m2repository" --no-ui
     - echo y | android update sdk --filter "extra-android-support" --no-ui
     - echo y | android update sdk --filter "extra-google-m2repository" --no-ui
@@ -27,7 +26,7 @@ deployment:
     release:
         branch: /.*release.*/
         commands:
-            - ./gradlew javadoc alljavadoc build publishApiJarPublicationToQaRepository
+            - ./gradlew javadoc build publishApiJarPublicationToQaRepository
     feature:
         branch: /.*feature.*/
         commands:

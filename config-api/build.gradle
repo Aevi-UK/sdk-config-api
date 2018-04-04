@@ -11,8 +11,6 @@ dependencies {
     compileOnly apiDependencies.androidMockable
     implementation apiDependencies.gson
     implementation apiDependencies.rxJava
-    implementation apiDependencies.rxMessenger
-    implementation apiDependencies.jsonConverter
 
     testImplementation apiDependencies.androidMockable
     testImplementation testDependencies.junit

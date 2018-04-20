@@ -1,1 +1,1 @@
-include ':DefaultAcquirerApp', ':config-api', ':api-constants'
+include ':DemoConfigProviderApp', ':config-api'

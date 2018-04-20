@@ -1,7 +1,7 @@
 ext {
 
     androidBuildVersion = "27.0.3"
-    projectTargetSdkVersion = 26
+    projectTargetSdkVersion = 27
     projectMinSdkVersion = 21
 
     supportLibrary = '27.0.2'
@@ -10,9 +10,6 @@ ext {
     gsonVersion = '2.8.0'
     rxJavaVersion = '2.1.2'
     printApiVersion = '1.0.1'
-    jsonConverterVersion = '1.0.0'
-
-    rxMessengerVersion = '3.0.1'
 
     junitVersion = '4.12'
     hamcrestVersion = '1.3'
@@ -29,10 +26,8 @@ ext {
     apiDependencies = [
             androidMockable: "com.google:android-mockable-default-values:$androidMockableVersion",
             rxJava         : "io.reactivex.rxjava2:rxjava:$rxJavaVersion",
-            rxMessenger    : "com.aevi.android:rxmessenger:$rxMessengerVersion",
             gson           : "com.google.code.gson:gson:$gsonVersion",
             okio           : "com.squareup.okio:okio:$okioVersion",
-            jsonConverter  : "com.aevi.util:json-converter:$jsonConverterVersion"
     ]
 
     testDependencies = [

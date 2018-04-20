@@ -1,11 +1,10 @@
 package com.aevi.sdk.config.impl;
 
+import io.reactivex.observers.TestObserver;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Set;
-
-import io.reactivex.observers.TestObserver;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
@@ -23,7 +22,7 @@ public class ConfigKeyStoreTest {
 
         TestObserver<Set<String>> testObserver = configKeyStore.observeKeyChanges().test();
 
-        ConfigApp configApp = new ConfigApp("respectMyAutoritiiiii", new String[]{"car", "house"});
+        ConfigApp configApp = new ConfigApp("myPackage", "respectMyAutoritiiiii", new String[]{"car", "house"});
         configKeyStore.save(configApp);
 
         testObserver.assertNotComplete();
@@ -37,12 +36,14 @@ public class ConfigKeyStoreTest {
 
     @Test
     public void canGetConfigAppFromKeyNames() {
+        String packageName = "myPackage";
         String authority = "deadOrAliveYourComingWithMe";
-        ConfigApp configApp = new ConfigApp(authority, new String[]{"clarence", "alex"});
+        ConfigApp configApp = new ConfigApp(packageName, authority, new String[]{"clarence", "alex"});
         configKeyStore.save(configApp);
 
+        String packageName2 = "myPackage2";
         String authority2 = "user";
-        ConfigApp configApp2 = new ConfigApp(authority2, new String[]{"flynn", "rinzler"});
+        ConfigApp configApp2 = new ConfigApp(packageName2, authority2, new String[]{"flynn", "rinzler"});
         configKeyStore.save(configApp2);
 
         assertThat(configKeyStore.getApp("clarence")).isEqualTo(configApp);

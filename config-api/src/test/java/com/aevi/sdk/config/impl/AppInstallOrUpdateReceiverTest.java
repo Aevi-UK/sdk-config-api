@@ -6,7 +6,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-
+import io.reactivex.Observable;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -14,15 +14,10 @@ import org.mockito.Mock;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.Observable;
-
 import static android.content.Intent.ACTION_PACKAGE_ADDED;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class AppInstallOrUpdateReceiverTest {
@@ -51,7 +46,7 @@ public class AppInstallOrUpdateReceiverTest {
         mockInfos.add(mock(ResolveInfo.class));
         when(packageManager.queryIntentContentProviders(any(Intent.class), eq(0))).thenReturn(mockInfos);
         when(context.getPackageManager()).thenReturn(packageManager);
-        when(configScanner.scan()).thenReturn(Observable.just(new ConfigApp("kiwi", new String[]{"apple", "tomato"})));
+        when(configScanner.scan()).thenReturn(Observable.just(new ConfigApp("mypackage", "kiwi", new String[]{"apple", "tomato"})));
         appInstallOrUpdateReceiver = new AppInstallOrUpdateReceiver(configKeyStore, configScanner);
     }
 

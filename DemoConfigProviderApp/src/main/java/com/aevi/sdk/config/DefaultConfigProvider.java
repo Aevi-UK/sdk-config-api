@@ -11,22 +11,33 @@ import java.nio.charset.Charset;
 
 import okio.Okio;
 
-import static com.aevi.sdk.config.constants.FlowConstants.FLOW_CONFIGS;
-import static com.aevi.sdk.config.constants.FlowConstants.REQUEST_TYPE_CONFIGS;
-
 public class DefaultConfigProvider extends BaseConfigProvider {
 
     private static final String TAG = DefaultConfigProvider.class.getSimpleName();
 
+    private static final String FLOW_CONFIGS = "flowConfigs";
+    private static final String REQUEST_TYPE_CONFIGS = "requestTypeConfigs";
+    private static final String WALLPAPER = "wallpaper";
+
     @Override
     public String[] getConfigKeys() {
         Log.d(TAG, "Returning config keys");
-        return new String[]{FLOW_CONFIGS, REQUEST_TYPE_CONFIGS};
+        return new String[]{FLOW_CONFIGS, REQUEST_TYPE_CONFIGS, WALLPAPER};
     }
 
     @Override
     public String getConfigValue(String key) {
         return "";
+    }
+
+    @Override
+    public int getIntConfigValue(String key) {
+        switch (key) {
+            case WALLPAPER:
+                return R.drawable.wallpaper;
+            default:
+                return 0;
+        }
     }
 
     @Override
@@ -37,6 +48,11 @@ public class DefaultConfigProvider extends BaseConfigProvider {
             case REQUEST_TYPE_CONFIGS:
                 return getRequestTypeConfigs();
         }
+        return new String[0];
+    }
+
+    @Override
+    protected String[] getAllowedCallingPackageNames() {
         return new String[0];
     }
 

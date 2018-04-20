@@ -60,50 +60,46 @@ class ConfigScanner extends BaseAppScanner<ConfigApp> {
         Log.i(TAG, String.format("Found config provider in package: %s authority: %s", providerInfo.packageName, providerInfo.authority));
         try {
             String[] keys = getKeys(providerInfo.authority);
-            emitter.onNext(new ConfigApp(providerInfo.authority, keys));
+            emitter.onNext(new ConfigApp(providerInfo.packageName, providerInfo.authority, keys));
         } catch (Exception e) {
             Log.i(TAG, "Failed to get app information. App will be ignored", e);
         }
     }
 
     private String[] getKeys(String authority) {
-        return getStringArrayForMethod(authority, METHOD_GET_KEYS, null, CONFIG_KEYS);
+        return getValueForMethod(authority, METHOD_GET_KEYS, null, CONFIG_KEYS, new String[0]);
     }
 
     String getValue(String authority, String key) {
-        return getStringForMethod(authority, METHOD_GET, key, CONFIG_VALUE);
+        return getValueForMethod(authority, METHOD_GET, key, CONFIG_VALUE, "");
     }
 
     String[] getArrayValue(String authority, String key) {
-        return getStringArrayForMethod(authority, METHOD_GET_ARRAY, key, CONFIG_VALUES);
+        return getValueForMethod(authority, METHOD_GET_ARRAY, key, CONFIG_VALUES, new String[0]);
     }
 
-    private String getStringForMethod(String authority, String method, String getKey, String responseKey) {
-        Bundle bundle = getBundleFromProvider(authority, method, getKey);
-        if (bundle == null || !bundle.containsKey(responseKey)) {
-            Log.i(TAG, "No config from provider - ignoring: " + authority);
-            return "";
-        }
-        String string = bundle.getString(responseKey);
-        if (string == null) {
-            Log.i(TAG, "Empty config from provider - ignoring: " + authority);
-            return "";
-        }
-        return string;
+    int getIntValue(String authority, String key) {
+        return getValueForMethod(authority, METHOD_GET_INT, key, CONFIG_VALUE, 0);
     }
 
-    private String[] getStringArrayForMethod(String authority, String method, String getKey, String responseKey) {
+    private <T> T getValueForMethod(String authority, String method, String getKey, String responseKey, T defaultValue) {
         Bundle bundle = getBundleFromProvider(authority, method, getKey);
-        if (bundle == null || !bundle.containsKey(responseKey)) {
+        if (bundle != null && bundle.containsKey(responseKey)) {
+            try {
+                T value = (T) bundle.get(responseKey);
+                if (value != null) {
+                    return value;
+                } else {
+                    Log.i(TAG, "Empty config from provider - ignoring: " + authority);
+                }
+            } catch (ClassCastException e) {
+                Log.i(TAG, "Wrong config type from provider - ignoring: " + authority);
+            }
+        } else {
             Log.i(TAG, "No config from provider - ignoring: " + authority);
-            return new String[0];
         }
-        String[] stringArr = bundle.getStringArray(responseKey);
-        if (stringArr == null || stringArr.length == 0) {
-            Log.i(TAG, "Empty config from provider - ignoring: " + authority);
-            return new String[0];
-        }
-        return stringArr;
+
+        return defaultValue;
     }
 
     private Bundle getBundleFromProvider(String authority, String method, String getKey) {

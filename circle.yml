@@ -9,6 +9,11 @@ machine:
 
 dependencies:
   pre:
+    - echo y | android update sdk --no-ui --all --filter tools,platform-tools,android-27
+    - echo y | android update sdk --no-ui --all --filter build-tools-27.0.3
+    - echo y | android update sdk --filter "extra-android-m2repository" --no-ui
+    - echo y | android update sdk --filter "extra-android-support" --no-ui
+    - echo y | android update sdk --filter "extra-google-m2repository" --no-ui
     - /bin/bash writegradleprops.sh
   override:
     - sudo pip install awscli
@@ -21,19 +26,19 @@ deployment:
     release:
         branch: /.*release.*/
         commands:
-            - ./gradlew javadoc alljavadoc build publishApiJarPublicationToQaRepository
+            - ./gradlew javadoc build publishApiJarPublicationToQaRepository
     feature:
         branch: /.*feature.*/
         commands:
-            - ./gradlew javadoc build copyApiLibs
+            - ./gradlew javadoc build
     development:
         branch: develop
         commands:
-            - ./gradlew javadoc build publishApiJarPublicationToSnapshotRepository copyApiLibs
+            - ./gradlew javadoc build publishApiJarPublicationToSnapshotRepository
     production:
         branch: master
         commands:
-            - ./gradlew javadoc build publishApiJarPublicationToReleaseRepository
+            - ./gradlew javadoc build publishApiJarPublicationToReleaseRepository bintrayUpload
 
 general:
   artifacts:

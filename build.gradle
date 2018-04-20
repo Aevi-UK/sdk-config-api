@@ -5,12 +5,14 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.android.tools.build:gradle:3.1.1'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.0'
     }
 }
 
-ext.versionCode = 1
-version = "1.0.0-SNAPSHOT"
+ext.versionCode = 2
+version = "1.0.0"
 
 allprojects {
 
@@ -24,25 +26,13 @@ allprojects {
         jcenter()
         mavenCentral()
         maven { url 'https://maven.google.com' }
-        maven {
-            url "s3://sdk-snapshots.aevi.com/maven2"
-            credentials(AwsCredentials) {
-                accessKey aws_accessid
-                secretKey aws_accesskey
-            }
-        }
-        maven {
-            url "s3://sdk-qa.aevi.com/maven2"
-            credentials(AwsCredentials) {
-                accessKey aws_accessid
-                secretKey aws_accesskey
-            }
-        }
-        maven {
-            url "s3://sdk-releases.aevi.com/maven2"
-            credentials(AwsCredentials) {
-                accessKey aws_accessid
-                secretKey aws_accesskey
+        if (project.hasProperty('aws_accessid')) {
+            maven {
+                url "s3://sdk-snapshots.aevi.com/maven2"
+                credentials(AwsCredentials) {
+                    accessKey aws_accessid
+                    secretKey aws_accesskey
+                }
             }
         }
         maven {

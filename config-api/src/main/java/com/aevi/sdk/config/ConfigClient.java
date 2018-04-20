@@ -1,5 +1,7 @@
 package com.aevi.sdk.config;
 
+import com.aevi.sdk.config.impl.ConfigResource;
+
 import java.util.Set;
 
 import io.reactivex.Observable;
@@ -32,6 +34,17 @@ public interface ConfigClient {
      */
     @NonNull
     String[] getConfigArrayValue(String key);
+
+
+    /**
+     * Returns the resource of a particular key
+     *
+     * @param key          The key to get
+     * @param defaultValue The default value to return if this key is not found
+     * @return The resource matching the given key or defaultValue if not found
+     */
+    @NonNull
+    ConfigResource getConfigResource(String key, @NonNull ConfigResource defaultValue);
 
     /**
      * Subscribe to changes in configurations

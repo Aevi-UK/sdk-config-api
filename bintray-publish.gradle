@@ -1,0 +1,86 @@
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+def siteUrl = 'https://github.com/Aevi-UK/sdk-config-api'
+def gitUrl = 'https://github.com/Aevi-UK/sdk-config-api.git'// Create the pom configuration:
+
+def pomConfig = {
+    name 'AeviConfigurationApi'
+    url siteUrl
+    licenses {
+        license {
+            name 'The Apache Software License, Version 2.0'
+            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+        }
+    }
+    developers {
+        developer {
+            id 'brettwold'
+            name 'Brett Cherrington'
+            email 'brett@annalytics.co.uk'
+        }
+        developer {
+            id 'xdevl'
+            name 'Xavier Raux'
+        }
+    }
+    scm {
+        connection gitUrl
+        developerConnection gitUrl
+        url siteUrl
+    }
+}
+
+publishing {
+    publications {
+        apiJar(MavenPublication) {
+            groupId group
+            artifactId "${artifactId}"
+            version version
+
+            from components.java
+            artifact javadocJar
+            artifact sourcesJar
+
+            pom.withXml {
+                def root = asNode()
+                root.children().last() + pomConfig
+
+            }
+        }
+    }
+}
+
+bintray {
+    if (project.hasProperty('bintrayUser') && project.hasProperty('bintrayKey')) {
+        user = project.bintrayUser
+        key = project.bintrayKey
+    }
+    publications = ['apiJar']
+    configurations = ['archives']
+    override = true
+
+    pkg {
+        dryRun = false
+        publish = true
+        repo = 'aevi-uk'
+        name = 'sdk-config-api'
+        userOrg = 'aevi'
+        licenses = ['Apache-2.0']
+        labels = ['android']
+        websiteUrl = siteUrl
+        issueTrackerUrl = 'https://github.com/Aevi-UK/sdk-config-api/issues'
+        vcsUrl = gitUrl
+        publicDownloadNumbers = true
+    }
+}

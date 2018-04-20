@@ -1,10 +1,11 @@
 package com.aevi.sdk.config;
 
 import com.aevi.sdk.config.impl.ConfigResource;
-import io.reactivex.Observable;
-import io.reactivex.annotations.NonNull;
 
 import java.util.Set;
+
+import io.reactivex.Observable;
+import io.reactivex.annotations.NonNull;
 
 public interface ConfigClient {
 
@@ -38,8 +39,9 @@ public interface ConfigClient {
     /**
      * Returns the resource of a particular key
      *
-     * @param key The key to get
-     * @return The resource matching the given key or {@param defaultValue} if not found
+     * @param key          The key to get
+     * @param defaultValue The default value to return if this key is not found
+     * @return The resource matching the given key or defaultValue if not found
      */
     @NonNull
     ConfigResource getConfigResource(String key, @NonNull ConfigResource defaultValue);

@@ -1,5 +1,6 @@
 apply plugin: 'java-library'
 
+
 group = 'com.aevi.sdk.config'
 version = "${apiVersion}"
 ext.propsFile = "config-api.properties"
@@ -11,8 +12,6 @@ dependencies {
     compileOnly apiDependencies.androidMockable
     implementation apiDependencies.gson
     implementation apiDependencies.rxJava
-    implementation apiDependencies.rxMessenger
-    implementation apiDependencies.jsonConverter
 
     testImplementation apiDependencies.androidMockable
     testImplementation testDependencies.junit
@@ -38,7 +37,8 @@ javadoc {
     options.memberLevel = JavadocMemberLevel.PUBLIC
 }
 
-apply from: '../jar-publisher.gradle'
-
 sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
+
+apply from: '../bintray-publish.gradle'
+

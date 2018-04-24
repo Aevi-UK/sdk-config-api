@@ -11,8 +11,8 @@ buildscript {
     }
 }
 
-ext.versionCode = 2
-version = "1.0.0"
+ext.versionCode = 4
+version = "1.0.1"
 
 allprojects {
 

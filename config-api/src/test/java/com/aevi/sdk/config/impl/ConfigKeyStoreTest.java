@@ -1,10 +1,12 @@
 package com.aevi.sdk.config.impl;
 
-import io.reactivex.observers.TestObserver;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Set;
+
+import io.reactivex.observers.TestObserver;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
@@ -22,8 +24,7 @@ public class ConfigKeyStoreTest {
 
         TestObserver<Set<String>> testObserver = configKeyStore.observeKeyChanges().test();
 
-        ConfigApp configApp = new ConfigApp("myPackage", "respectMyAutoritiiiii", new String[]{"car", "house"});
-        configKeyStore.save(configApp);
+        setupDefaultConfigApp();
 
         testObserver.assertNotComplete();
         testObserver.assertNoErrors();
@@ -52,5 +53,37 @@ public class ConfigKeyStoreTest {
         assertThat(configKeyStore.getApp("flynn")).isEqualTo(configApp2);
         assertThat(configKeyStore.getKeys()).hasSize(4);
         assertThat(configKeyStore.getKeys()).contains("clarence", "alex", "flynn", "rinzler");
+    }
+
+    @Test
+    public void noConfigAppsFoundWillClearCache() {
+        ConfigApp configApp = new ConfigApp("myPackage", "respectMyAutoritiiiii", new String[]{"banana", "smoothie"});
+        configKeyStore.save(configApp);
+
+        ConfigApp configApp1 = configKeyStore.getApp("banana");
+        assertThat(configApp1).isNotNull();
+
+        configKeyStore.save(new ArrayList<ConfigApp>());
+
+        ConfigApp configApp2 = configKeyStore.getApp("banana");
+        assertThat(configApp2).isNull();
+    }
+
+    @Test
+    public void noConfigAppsWillNotify() {
+        setupDefaultConfigApp();
+
+        TestObserver<Set<String>> testObserver = configKeyStore.observeKeyChanges().test();
+
+        configKeyStore.save(new ArrayList<ConfigApp>());
+
+        testObserver.assertNotComplete();
+        testObserver.assertNoErrors();
+        testObserver.assertValueCount(1);
+    }
+
+    private void setupDefaultConfigApp() {
+        ConfigApp configApp = new ConfigApp("myPackage", "respectMyAutoritiiiii", new String[]{"car", "house"});
+        configKeyStore.save(configApp);
     }
 }

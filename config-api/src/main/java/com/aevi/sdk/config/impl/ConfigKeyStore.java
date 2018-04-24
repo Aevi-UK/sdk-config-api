@@ -17,18 +17,33 @@ class ConfigKeyStore {
     private final Map<String, ConfigApp> keys = new HashMap<>();
     private final PublishSubject<Set<String>> keyChangePublisher = PublishSubject.create();
 
-    void save(List<ConfigApp> configApps) {
-        if (configApps.size() == 0) {
-            keys.clear();
-            notifyKeyChange();
-        } else {
-            for (ConfigApp configApp : configApps) {
-                save(configApp);
-            }
+    Observable<Set<String>> observeKeyChanges() {
+        return keyChangePublisher;
+    }
+
+    Set<String> getKeys() {
+        synchronized (keys) {
+            return keys.keySet();
         }
     }
 
-    void save(ConfigApp configApp) {
+    ConfigApp getApp(String key) {
+        synchronized (keys) {
+            return keys.get(key);
+        }
+    }
+
+    void save(List<ConfigApp> configApps) {
+        synchronized (keys) {
+            keys.clear();
+            for (ConfigApp configApp : configApps) {
+                save(configApp);
+            }
+            notifyKeyChange();
+        }
+    }
+
+    private void save(ConfigApp configApp) {
         Log.d(TAG, "Got external config(s) from application: " + configApp.getAuthority());
         String[] appKeys = configApp.getKeys();
         if (appKeys != null) {
@@ -41,23 +56,10 @@ class ConfigKeyStore {
                 }
                 keys.put(key, configApp);
             }
-            notifyKeyChange();
         }
-    }
-
-    Observable<Set<String>> observeKeyChanges() {
-        return keyChangePublisher;
     }
 
     private void notifyKeyChange() {
         keyChangePublisher.onNext(keys.keySet());
-    }
-
-    Set<String> getKeys() {
-        return keys.keySet();
-    }
-
-    ConfigApp getApp(String key) {
-        return keys.get(key);
     }
 }

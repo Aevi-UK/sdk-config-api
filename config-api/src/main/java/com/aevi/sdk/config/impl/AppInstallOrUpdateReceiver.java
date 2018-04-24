@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
 
+import java.util.List;
+
 import io.reactivex.functions.Consumer;
 
 import static android.content.Intent.ACTION_PACKAGE_ADDED;
@@ -47,13 +49,15 @@ class AppInstallOrUpdateReceiver extends BroadcastReceiver {
     }
 
     void scanForConfigProviders() {
-        configScanner.scan().subscribe(new Consumer<ConfigApp>() {
-            @Override
-            public void accept(ConfigApp configApp) throws Exception {
-                Log.d(TAG, "Got external config(s) from application: " + configApp.getAuthority());
-                configKeyStore.save(configApp);
-            }
-        });
+        configScanner.scan()
+                .toList()
+                .subscribe(new Consumer<List<ConfigApp>>() {
+                    @Override
+                    public void accept(List<ConfigApp> configApps) throws Exception {
+                        Log.d(TAG, String.format("Found %d external config applications", configApps.size()));
+                        configKeyStore.save(configApps);
+                    }
+                });
     }
 
     private boolean isProviderPermanentlyRemoved(Intent intent) {

@@ -6,7 +6,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import io.reactivex.Observable;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -14,10 +14,16 @@ import org.mockito.Mock;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observable;
+
 import static android.content.Intent.ACTION_PACKAGE_ADDED;
+import static android.content.Intent.ACTION_PACKAGE_REMOVED;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class AppInstallOrUpdateReceiverTest {
@@ -93,10 +99,23 @@ public class AppInstallOrUpdateReceiverTest {
         verify(configScanner).scan();
     }
 
+    @Test
+    public void willNotifyForRemoval() {
+        setupRemoveActionIntent();
+
+        appInstallOrUpdateReceiver.onReceive(context, intent);
+
+        verify(configScanner).scan();
+    }
+
     private void setupInstallActionIntent(String data) {
         when(intent.getAction()).thenReturn(ACTION_PACKAGE_ADDED);
         Uri uri = mock(Uri.class);
         when(uri.getEncodedSchemeSpecificPart()).thenReturn(data);
         when(intent.getData()).thenReturn(uri);
+    }
+
+    private void setupRemoveActionIntent() {
+        when(intent.getAction()).thenReturn(ACTION_PACKAGE_REMOVED);
     }
 }

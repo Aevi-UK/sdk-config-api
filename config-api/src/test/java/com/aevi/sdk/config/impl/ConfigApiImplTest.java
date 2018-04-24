@@ -1,12 +1,16 @@
 package com.aevi.sdk.config.impl;
 
 import android.content.Context;
-import io.reactivex.observers.TestObserver;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+
+import io.reactivex.observers.TestObserver;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -55,9 +59,7 @@ public class ConfigApiImplTest {
     public void willNotifyOnKeys() {
 
         TestObserver<Set<String>> testObserver = configApi.subscribeToConfigurationChanges().test();
-
-        ConfigApp configApp = new ConfigApp(context.getPackageName(), "respectMyAutoritiiiii", new String[]{"car", "house"});
-        configKeyStore.save(configApp);
+        setupConfigApp(context.getPackageName(), "respectMyAutoritiiiii","car", "house");
 
         testObserver.assertNotComplete();
         testObserver.assertNoErrors();
@@ -70,8 +72,7 @@ public class ConfigApiImplTest {
     @Test
     public void willCallContentProviderForKey() {
         String authority = "deadOrAliveYourComingWithMe";
-        ConfigApp configApp = new ConfigApp(context.getPackageName(), authority, new String[]{"clarence", "alex"});
-        configKeyStore.save(configApp);
+        setupConfigApp(context.getPackageName(), authority,"clarence", "alex");
 
         configApi.getConfigValue("alex");
 
@@ -81,12 +82,18 @@ public class ConfigApiImplTest {
     @Test
     public void willCallContentProviderForArrayKey() {
         String authority = "iNeverBrokeTheLaw";
-        ConfigApp configApp = new ConfigApp(context.getPackageName(), authority, new String[]{"fargo", "dredd"});
-        configKeyStore.save(configApp);
+        setupConfigApp(context.getPackageName(), authority,"fargo", "dredd");
 
         configApi.getConfigArrayValue("dredd");
 
         verify(configScanner).getArrayValue(authority, "dredd");
+    }
+
+    private void setupConfigApp(String packageName, String authority, String... keys) {
+        ConfigApp configApp = new ConfigApp(packageName, authority, keys);
+        List<ConfigApp> configApps = new ArrayList<>();
+        configApps.add(configApp);
+        configKeyStore.save(configApps);
     }
 
     @Test

@@ -3,7 +3,7 @@ package com.aevi.sdk.config;
 import android.content.Context;
 
 import com.aevi.sdk.config.impl.Component;
-import com.aevi.sdk.config.impl.ConfigApiImpl;
+import com.aevi.sdk.config.impl.ConfigClientImpl;
 
 public final class ConfigApi {
 
@@ -15,6 +15,6 @@ public final class ConfigApi {
      */
     public static ConfigClient getConfigClient(Context context) {
         Component component = new Component(context);
-        return new ConfigApiImpl(component);
+        return new ConfigClientImpl(component);
     }
 }

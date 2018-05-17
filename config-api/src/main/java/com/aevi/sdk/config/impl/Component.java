@@ -1,15 +1,15 @@
 package com.aevi.sdk.config.impl;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import java.util.List;
 
-import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
 public class Component {
 
-    private final AppInstallOrUpdateReceiver appInstallOrUpdateReceiver;
+    private final ConfigProviderChangeReceiver configProviderChangeReceiver;
     private final ConfigKeyStore configKeyStore;
     private final ConfigScanner configScanner;
     private final Context context;
@@ -18,7 +18,7 @@ public class Component {
         this.context = context;
         this.configKeyStore = new ConfigKeyStore();
         this.configScanner = new ConfigScanner(context);
-        this.appInstallOrUpdateReceiver = new AppInstallOrUpdateReceiver(configKeyStore, configScanner);
+        this.configProviderChangeReceiver = new ConfigProviderChangeReceiver(configKeyStore, configScanner);
         configScanner.scan().toList().subscribe(new Consumer<List<ConfigApp>>() {
             @Override
             public void accept(List<ConfigApp> configApps) {
@@ -28,8 +28,8 @@ public class Component {
     }
 
     @NonNull
-    AppInstallOrUpdateReceiver getAppInstallOrUpdateReceiver() {
-        return appInstallOrUpdateReceiver;
+    ConfigProviderChangeReceiver getConfigProviderChangeReceiver() {
+        return configProviderChangeReceiver;
     }
 
     @NonNull

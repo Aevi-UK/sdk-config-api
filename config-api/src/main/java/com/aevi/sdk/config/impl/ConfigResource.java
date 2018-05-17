@@ -5,8 +5,10 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 
 import java.io.InputStream;
+import java.util.Locale;
 
 public final class ConfigResource {
 
@@ -30,26 +32,31 @@ public final class ConfigResource {
         this.versionCode = getCurrentVersionCode(context);
     }
 
+    @NonNull
     public String getUniqueReference() {
-        return String.format("%s:%d:%d", packageName, versionCode, id);
+        return String.format(Locale.getDefault(), "%s:%d:%d", packageName, versionCode, id);
     }
 
     public int getId() {
         return id;
     }
 
+    @NonNull
     public Resources getResources(Context context) {
         return resources;
     }
 
+    @NonNull
     public String asString(String... args) {
         return resources.getString(id, (Object[]) args);
     }
 
+    @NonNull
     public Drawable asDrawable() {
         return resources.getDrawable(id, null);
     }
 
+    @NonNull
     public InputStream asInputStream() {
         return resources.openRawResource(id);
     }

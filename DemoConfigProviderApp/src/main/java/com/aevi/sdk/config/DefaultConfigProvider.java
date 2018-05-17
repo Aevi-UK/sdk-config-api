@@ -1,6 +1,7 @@
 package com.aevi.sdk.config;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.aevi.sdk.config.provider.BaseConfigProvider;
@@ -54,6 +55,12 @@ public class DefaultConfigProvider extends BaseConfigProvider {
     @Override
     protected String[] getAllowedCallingPackageNames() {
         return new String[0];
+    }
+
+    @NonNull
+    @Override
+    protected String getVendorName() {
+        return "AEVI";
     }
 
     public String[] getFlowConfigs() {

@@ -7,27 +7,27 @@ import org.junit.Test;
 import org.mockito.Mock;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import io.reactivex.observers.TestObserver;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class ConfigApiImplTest {
+public class ConfigClientImplTest {
 
-    private ConfigApiImpl configApi;
+    private ConfigClientImpl configApi;
 
     @Mock
     Component component;
 
     ConfigKeyStore configKeyStore;
     @Mock
-    AppInstallOrUpdateReceiver appInstallOrUpdateReceiver;
+    ConfigProviderChangeReceiver configProviderChangeReceiver;
     @Mock
     ConfigScanner configScanner;
     @Mock
@@ -37,13 +37,13 @@ public class ConfigApiImplTest {
     public void setup() {
         initMocks(this);
         setupMockComponent();
-        configApi = new ConfigApiImpl(component);
+        configApi = new ConfigClientImpl(component);
     }
 
     private void setupMockComponent() {
         configKeyStore = new ConfigKeyStore();
         when(component.getConfigKeyStore()).thenReturn(configKeyStore);
-        when(component.getAppInstallOrUpdateReceiver()).thenReturn(appInstallOrUpdateReceiver);
+        when(component.getConfigProviderChangeReceiver()).thenReturn(configProviderChangeReceiver);
         when(component.getConfigScanner()).thenReturn(configScanner);
         when(component.getContext()).thenReturn(context);
     }
@@ -58,21 +58,21 @@ public class ConfigApiImplTest {
     @Test
     public void willNotifyOnKeys() {
 
-        TestObserver<Set<String>> testObserver = configApi.subscribeToConfigurationChanges().test();
-        setupConfigApp(context.getPackageName(), "respectMyAutoritiiiii","car", "house");
+        TestObserver<ConfigUpdate> testObserver = configApi.subscribeToConfigurationUpdates().test();
+        setupConfigApp(context.getPackageName(), "respectMyAutoritiiiii", "car", "house");
 
         testObserver.assertNotComplete();
         testObserver.assertNoErrors();
         testObserver.assertValueCount(1);
 
-        verify(appInstallOrUpdateReceiver).registerForBroadcasts(any(Context.class));
-        verify(appInstallOrUpdateReceiver).scanForConfigProviders();
+        verify(configProviderChangeReceiver).registerForBroadcasts(any(Context.class));
+        verify(configProviderChangeReceiver).scanForConfigProviders();
     }
 
     @Test
     public void willCallContentProviderForKey() {
         String authority = "deadOrAliveYourComingWithMe";
-        setupConfigApp(context.getPackageName(), authority,"clarence", "alex");
+        setupConfigApp(context.getPackageName(), authority, "clarence", "alex");
 
         configApi.getConfigValue("alex");
 
@@ -82,7 +82,7 @@ public class ConfigApiImplTest {
     @Test
     public void willCallContentProviderForArrayKey() {
         String authority = "iNeverBrokeTheLaw";
-        setupConfigApp(context.getPackageName(), authority,"fargo", "dredd");
+        setupConfigApp(context.getPackageName(), authority, "fargo", "dredd");
 
         configApi.getConfigArrayValue("dredd");
 
@@ -90,7 +90,7 @@ public class ConfigApiImplTest {
     }
 
     private void setupConfigApp(String packageName, String authority, String... keys) {
-        ConfigApp configApp = new ConfigApp(packageName, authority, keys);
+        ConfigApp configApp = new ConfigApp("AEVI", "1.0.0", packageName, authority, new HashSet<String>(Arrays.asList(keys)));
         List<ConfigApp> configApps = new ArrayList<>();
         configApps.add(configApp);
         configKeyStore.save(configApps);
@@ -100,7 +100,7 @@ public class ConfigApiImplTest {
     public void canCloseAndReleaseReceiver() {
         configApi.close();
 
-        verify(context).unregisterReceiver(any(AppInstallOrUpdateReceiver.class));
+        verify(context).unregisterReceiver(any(ConfigProviderChangeReceiver.class));
     }
 
 }

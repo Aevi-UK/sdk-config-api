@@ -2,13 +2,14 @@ package com.aevi.sdk.config.provider;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
-
-import io.reactivex.annotations.NonNull;
 
 public abstract class BaseConfigProvider extends ContentProvider {
 
@@ -19,16 +20,42 @@ public abstract class BaseConfigProvider extends ContentProvider {
     public static final String METHOD_GET_ARRAY = "getArray";
     public static final String METHOD_GET_KEYS = "getKeys";
 
+    public static final String CONFIG_VENDOR = "vendor";
     public static final String CONFIG_KEYS = "keys";
     public static final String CONFIG_VALUE = "value";
     public static final String CONFIG_VALUES = "values";
 
+    public static final String CONFIG_UPDATED_BROADCAST = "com.aevi.intent.action.CONFIG_UPDATED";
+
+    /**
+     * Get the array of config keys this provider supports.
+     *
+     * @return The supported array of config keys
+     */
     public abstract String[] getConfigKeys();
 
+    /**
+     * Get the config value for the provided key.
+     *
+     * @param key The config key
+     * @return The config value for the provided key
+     */
     public abstract String getConfigValue(String key);
 
+    /**
+     * Get the config integer value for the provided key.
+     *
+     * @param key The config key
+     * @return The integer config value for the provided key
+     */
     public abstract int getIntConfigValue(String key);
 
+    /**
+     * Get the config array value for the provided key.
+     *
+     * @param key The config key
+     * @return The array config value for the provided key
+     */
     public abstract String[] getConfigArrayValue(String key);
 
     /**
@@ -39,6 +66,14 @@ public abstract class BaseConfigProvider extends ContentProvider {
     @NonNull
     protected abstract String[] getAllowedCallingPackageNames();
 
+    /**
+     * Return the name of the vendor responsible for this config provider.
+     *
+     * @return The name of the vendor responsible for this config provider
+     */
+    @NonNull
+    protected abstract String getVendorName();
+
     public final Bundle call(String method, String key, Bundle extras) {
 
         String callingPackageName = getContext().getPackageManager().getNameForUid(Binder.getCallingUid());
@@ -48,6 +83,7 @@ public abstract class BaseConfigProvider extends ContentProvider {
             if (method != null) {
                 switch (method) {
                     case METHOD_GET_KEYS:
+                        b.putString(CONFIG_VENDOR, getVendorName());
                         b.putStringArray(CONFIG_KEYS, getConfigKeys());
                         break;
                     case METHOD_GET:
@@ -72,11 +108,11 @@ public abstract class BaseConfigProvider extends ContentProvider {
 
     private boolean isAllowedCallingPackageName(String callingPackageName) {
         String[] allowedPackageNames = getAllowedCallingPackageNames();
-        if(allowedPackageNames.length == 0) {
-           return true;
+        if (allowedPackageNames.length == 0) {
+            return true;
         }
-        for(String allowedPackageName : allowedPackageNames) {
-            if(allowedPackageName.equals(callingPackageName)) {
+        for (String allowedPackageName : allowedPackageNames) {
+            if (allowedPackageName.equals(callingPackageName)) {
                 return true;
             }
         }
@@ -111,5 +147,23 @@ public abstract class BaseConfigProvider extends ContentProvider {
     @Override
     public int update(Uri uri, ContentValues contentValues, String s, String[] strings) {
         return 0;
+    }
+
+    /**
+     * Notify clients that the config has been updated.
+     *
+     * @param context     The Android context
+     * @param updatedKeys Optionally, the keys that themselves or associated values have changed can be specified
+     */
+    public static void notifyConfigUpdated(Context context, String... updatedKeys) {
+        String pkg = "package:" + context.getPackageName();
+        Uri pkgUri = Uri.parse(pkg);
+        Intent broadcast = new Intent(CONFIG_UPDATED_BROADCAST);
+        broadcast.setData(pkgUri);
+        if (updatedKeys == null) {
+            updatedKeys = new String[0];
+        }
+        broadcast.putExtra(CONFIG_KEYS, updatedKeys);
+        context.sendBroadcast(broadcast);
     }
 }

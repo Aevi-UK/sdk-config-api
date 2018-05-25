@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -59,11 +61,29 @@ class ConfigScanner extends BaseAppScanner<ConfigApp> {
     private void handleDiscoveredConfigApps(ProviderInfo providerInfo, ObservableEmitter<ConfigApp> emitter) {
         Log.i(TAG, String.format("Found config provider in package: %s authority: %s", providerInfo.packageName, providerInfo.authority));
         try {
-            String[] keys = getKeys(providerInfo.authority);
-            emitter.onNext(new ConfigApp(providerInfo.packageName, providerInfo.authority, keys));
+            ConfigApp configApp = getConfigAppDetails(providerInfo.packageName, providerInfo.authority);
+            if (configApp != null) {
+                emitter.onNext(configApp);
+            }
         } catch (Exception e) {
             Log.i(TAG, "Failed to get app information. App will be ignored", e);
         }
+    }
+
+    private ConfigApp getConfigAppDetails(String packageName, String authority) {
+        Bundle bundle = getBundleFromProvider(authority, METHOD_GET_KEYS, null);
+        String[] keys = bundle.getStringArray(CONFIG_KEYS);
+        if (keys == null || keys.length == 0) {
+            Log.i(TAG, "Config provider (" + authority + ") supports no keys - ignoring...");
+            return null;
+        }
+        if (!bundle.containsKey(CONFIG_VENDOR)) {
+            // Older provider impl - set a default
+            bundle.putString(CONFIG_VENDOR, "UNKNOWN");
+        }
+        String vendor = bundle.getString(CONFIG_VENDOR);
+        String version = getProviderVersion(packageName);
+        return new ConfigApp(vendor, version, packageName, authority, new HashSet<>(Arrays.asList(keys)));
     }
 
     private String[] getKeys(String authority) {

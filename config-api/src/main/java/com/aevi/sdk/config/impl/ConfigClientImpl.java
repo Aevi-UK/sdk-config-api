@@ -1,22 +1,30 @@
 package com.aevi.sdk.config.impl;
 
 import android.content.pm.PackageManager;
+
 import com.aevi.sdk.config.ConfigClient;
-import io.reactivex.Observable;
 
 import java.util.Set;
 
-public final class ConfigApiImpl implements ConfigClient {
+import io.reactivex.Observable;
+import io.reactivex.functions.Function;
+
+public class ConfigClientImpl implements ConfigClient {
 
     private final Component component;
 
-    public ConfigApiImpl(Component component) {
+    public ConfigClientImpl(Component component) {
         this.component = component;
     }
 
     @Override
     public Set<String> getConfigKeys() {
         return component.getConfigKeyStore().getKeys();
+    }
+
+    @Override
+    public ConfigUpdate getLatestConfig() {
+        return component.getConfigKeyStore().getCurrentConfig();
     }
 
     @Override
@@ -53,16 +61,30 @@ public final class ConfigApiImpl implements ConfigClient {
 
     @Override
     public Observable<Set<String>> subscribeToConfigurationChanges() {
-        Observable<Set<String>> obs = component.getConfigKeyStore().observeKeyChanges();
-        component.getAppInstallOrUpdateReceiver().registerForBroadcasts(component.getContext());
-        component.getAppInstallOrUpdateReceiver().scanForConfigProviders();
-        return obs;
+        scanAndRegisterForBroadcasts();
+        return component.getConfigKeyStore().observeUpdates().map(new Function<ConfigUpdate, Set<String>>() {
+            @Override
+            public Set<String> apply(ConfigUpdate configUpdate) throws Exception {
+                return configUpdate.getAllKeys();
+            }
+        });
+    }
+
+    @Override
+    public Observable<ConfigUpdate> subscribeToConfigurationUpdates() {
+        scanAndRegisterForBroadcasts();
+        return component.getConfigKeyStore().observeUpdates();
+    }
+
+    private void scanAndRegisterForBroadcasts() {
+        component.getConfigProviderChangeReceiver().registerForBroadcasts(component.getContext());
+        component.getConfigProviderChangeReceiver().scanForConfigProviders();
     }
 
     @Override
     public void close() {
         try {
-            component.getContext().unregisterReceiver(component.getAppInstallOrUpdateReceiver());
+            component.getContext().unregisterReceiver(component.getConfigProviderChangeReceiver());
         } catch (Exception e) {
             //... if not found
         }

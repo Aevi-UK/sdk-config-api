@@ -12,23 +12,21 @@ import org.junit.Test;
 import org.mockito.Mock;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import io.reactivex.Observable;
 
-import static android.content.Intent.ACTION_PACKAGE_ADDED;
-import static android.content.Intent.ACTION_PACKAGE_REMOVED;
+import static android.content.Intent.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class AppInstallOrUpdateReceiverTest {
+public class ConfigProviderChangeReceiverTest {
 
-    private AppInstallOrUpdateReceiver appInstallOrUpdateReceiver;
+    private ConfigProviderChangeReceiver configProviderChangeReceiver;
 
     @Mock
     ConfigKeyStore configKeyStore;
@@ -52,22 +50,22 @@ public class AppInstallOrUpdateReceiverTest {
         mockInfos.add(mock(ResolveInfo.class));
         when(packageManager.queryIntentContentProviders(any(Intent.class), eq(0))).thenReturn(mockInfos);
         when(context.getPackageManager()).thenReturn(packageManager);
-        when(configScanner.scan()).thenReturn(Observable.just(new ConfigApp("mypackage", "kiwi", new String[]{"apple", "tomato"})));
-        appInstallOrUpdateReceiver = new AppInstallOrUpdateReceiver(configKeyStore, configScanner);
+        when(configScanner.scan()).thenReturn(Observable.just(new ConfigApp("vendor", "1.0.0", "mypackage", "kiwi", new HashSet<String>(Arrays.asList("apple", "tomato")))));
+        configProviderChangeReceiver = new ConfigProviderChangeReceiver(configKeyStore, configScanner);
     }
 
     @Test
     public void canRegisterForBroadcasts() {
-        appInstallOrUpdateReceiver.registerForBroadcasts(context);
+        configProviderChangeReceiver.registerForBroadcasts(context);
 
-        verify(context).registerReceiver(eq(appInstallOrUpdateReceiver), any(IntentFilter.class));
+        verify(context).registerReceiver(eq(configProviderChangeReceiver), any(IntentFilter.class));
     }
 
     @Test
     public void willIgnoreIncorrectIntent() {
         Intent intent = new Intent();
 
-        appInstallOrUpdateReceiver.onReceive(context, intent);
+        configProviderChangeReceiver.onReceive(context, intent);
 
         verify(configScanner, times(0)).scan();
     }
@@ -76,7 +74,7 @@ public class AppInstallOrUpdateReceiverTest {
     public void willIgnoreNullPackageNameInIntent() {
         setupInstallActionIntent(null);
 
-        appInstallOrUpdateReceiver.onReceive(context, intent);
+        configProviderChangeReceiver.onReceive(context, intent);
 
         verify(configScanner, times(0)).scan();
     }
@@ -85,7 +83,7 @@ public class AppInstallOrUpdateReceiverTest {
     public void willIgnoreNoPackageNameInIntent() {
         setupInstallActionIntent("");
 
-        appInstallOrUpdateReceiver.onReceive(context, intent);
+        configProviderChangeReceiver.onReceive(context, intent);
 
         verify(configScanner, times(0)).scan();
     }
@@ -94,7 +92,7 @@ public class AppInstallOrUpdateReceiverTest {
     public void willScanOnIntent() {
         setupInstallActionIntent("arthur.bishop");
 
-        appInstallOrUpdateReceiver.onReceive(context, intent);
+        configProviderChangeReceiver.onReceive(context, intent);
 
         verify(configScanner).scan();
     }
@@ -103,7 +101,7 @@ public class AppInstallOrUpdateReceiverTest {
     public void willNotifyForRemoval() {
         setupRemoveActionIntent();
 
-        appInstallOrUpdateReceiver.onReceive(context, intent);
+        configProviderChangeReceiver.onReceive(context, intent);
 
         verify(configScanner).scan();
     }

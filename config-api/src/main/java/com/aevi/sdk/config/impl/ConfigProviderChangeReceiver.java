@@ -6,23 +6,23 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
 
+import com.aevi.sdk.config.provider.BaseConfigProvider;
+
 import java.util.List;
 
 import io.reactivex.functions.Consumer;
 
-import static android.content.Intent.ACTION_PACKAGE_ADDED;
-import static android.content.Intent.ACTION_PACKAGE_CHANGED;
-import static android.content.Intent.ACTION_PACKAGE_REMOVED;
+import static android.content.Intent.*;
 
-class AppInstallOrUpdateReceiver extends BroadcastReceiver {
+class ConfigProviderChangeReceiver extends BroadcastReceiver {
 
-    private static final String TAG = AppInstallOrUpdateReceiver.class.getSimpleName();
+    private static final String TAG = ConfigProviderChangeReceiver.class.getSimpleName();
     private static final String PACKAGE_DATA = "package";
 
     private final ConfigKeyStore configKeyStore;
     private final ConfigScanner configScanner;
 
-    public AppInstallOrUpdateReceiver(ConfigKeyStore configKeyStore, ConfigScanner configScanner) {
+    public ConfigProviderChangeReceiver(ConfigKeyStore configKeyStore, ConfigScanner configScanner) {
         this.configKeyStore = configKeyStore;
         this.configScanner = configScanner;
     }
@@ -40,12 +40,13 @@ class AppInstallOrUpdateReceiver extends BroadcastReceiver {
         IntentFilter intentFilter = new IntentFilter(ACTION_PACKAGE_ADDED);
         intentFilter.addAction(ACTION_PACKAGE_REMOVED);
         intentFilter.addAction(ACTION_PACKAGE_CHANGED);
+        intentFilter.addAction(BaseConfigProvider.CONFIG_UPDATED_BROADCAST);
         intentFilter.addDataScheme(PACKAGE_DATA);
         context.registerReceiver(this, intentFilter);
     }
 
     boolean isChangeToConfigProvider(Context context, Intent intent) {
-        return intent.getAction() != null && (isProviderPermanentlyRemoved(intent) || isProviderAdded(context, intent));
+        return intent.getAction() != null && (isProviderPermanentlyRemoved(intent) || isProviderAdded(context, intent) || isProviderConfigUpdated(intent));
     }
 
     void scanForConfigProviders() {
@@ -67,6 +68,10 @@ class AppInstallOrUpdateReceiver extends BroadcastReceiver {
     private boolean isProviderAdded(Context context, Intent intent) {
         return intent.getAction().equals(ACTION_PACKAGE_ADDED) && packageIsConfigProviderService(context,
                 intent.getData().getEncodedSchemeSpecificPart());
+    }
+
+    private boolean isProviderConfigUpdated(Intent intent) {
+        return intent.getAction().equals(BaseConfigProvider.CONFIG_UPDATED_BROADCAST);
     }
 
     private static boolean packageIsConfigProviderService(Context context, String packageName) {

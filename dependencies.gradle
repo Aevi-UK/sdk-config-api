@@ -24,10 +24,11 @@ ext {
     ]
 
     apiDependencies = [
-            androidMockable: "com.google:android-mockable-default-values:$androidMockableVersion",
-            rxJava         : "io.reactivex.rxjava2:rxjava:$rxJavaVersion",
-            gson           : "com.google.code.gson:gson:$gsonVersion",
-            okio           : "com.squareup.okio:okio:$okioVersion",
+            androidMockable   : "com.google:android-mockable-default-values:$androidMockableVersion",
+            rxJava            : "io.reactivex.rxjava2:rxjava:$rxJavaVersion",
+            gson              : "com.google.code.gson:gson:$gsonVersion",
+            okio              : "com.squareup.okio:okio:$okioVersion",
+            supportAnnotations: "com.android.support:support-annotations:$supportLibrary"
     ]
 
     testDependencies = [

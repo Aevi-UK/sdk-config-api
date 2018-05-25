@@ -3,9 +3,7 @@ package com.aevi.sdk.config.impl;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import io.reactivex.observers.TestObserver;
 
@@ -23,7 +21,7 @@ public class ConfigKeyStoreTest {
     @Test
     public void willNotifyOnKeysChanged() {
 
-        TestObserver<Set<String>> testObserver = configKeyStore.observeKeyChanges().test();
+        TestObserver<ConfigUpdate> testObserver = configKeyStore.observeUpdates().test();
 
         setupDefaultConfigApp();
 
@@ -31,19 +29,21 @@ public class ConfigKeyStoreTest {
         testObserver.assertNoErrors();
         testObserver.assertValueCount(1);
 
-        assertThat(testObserver.values().get(0).size()).isEqualTo(2);
-        assertThat(testObserver.values().get(0)).contains("car");
-        assertThat(testObserver.values().get(0)).contains("house");
+        ConfigUpdate configUpdate = testObserver.values().get(0);
+        Set<String> keys = configUpdate.getAllKeys();
+        assertThat(keys).hasSize(2);
+        assertThat(keys).contains("car");
+        assertThat(keys).contains("house");
     }
 
     @Test
     public void canGetConfigAppFromKeyNames() {
         String packageName = "myPackage";
         String authority = "deadOrAliveYourComingWithMe";
-        ConfigApp configApp = new ConfigApp(packageName, authority, new String[]{"clarence", "alex"});
+        ConfigApp configApp = new ConfigApp("vendor", "1.0.0", packageName, authority, new HashSet<>(Arrays.asList("clarence", "alex")));
         String packageName2 = "myPackage2";
         String authority2 = "user";
-        ConfigApp configApp2 = new ConfigApp(packageName2, authority2, new String[]{"flynn", "rinzler"});
+        ConfigApp configApp2 = new ConfigApp("vendor", "1.0.0", packageName2, authority2, new HashSet<>(Arrays.asList("flynn", "rinzler")));
 
         List<ConfigApp> configApps = new ArrayList<>();
         configApps.add(configApp);
@@ -75,7 +75,7 @@ public class ConfigKeyStoreTest {
     public void noConfigAppsWillNotify() {
         setupDefaultConfigApp();
 
-        TestObserver<Set<String>> testObserver = configKeyStore.observeKeyChanges().test();
+        TestObserver<ConfigUpdate> testObserver = configKeyStore.observeUpdates().test();
 
         configKeyStore.save(new ArrayList<ConfigApp>());
 
@@ -85,7 +85,7 @@ public class ConfigKeyStoreTest {
     }
 
     private void setupDefaultConfigApp() {
-        ConfigApp configApp = new ConfigApp("myPackage", "respectMyAutoritiiiii", new String[]{"car", "house"});
+        ConfigApp configApp = new ConfigApp("vendor", "1.0.0", "mypackage", "kiwi", new HashSet<>(Arrays.asList("car", "house")));
         List<ConfigApp> configApps = new ArrayList<>();
         configApps.add(configApp);
         configKeyStore.save(configApps);

@@ -2,6 +2,7 @@ package com.aevi.sdk.config.impl;
 
 
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.util.Log;
@@ -60,6 +61,15 @@ abstract class BaseAppScanner<T> {
             }
         } else {
             emitter.onComplete();
+        }
+    }
+
+    String getProviderVersion(String packageName) {
+        try {
+            PackageInfo pInfo = pm.getPackageInfo(packageName, 0);
+            return pInfo.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            return "X.X.X";
         }
     }
 

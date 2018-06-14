@@ -33,6 +33,10 @@ def pomConfig = {
             id 'xdevl'
             name 'Xavier Raux'
         }
+        developer {
+            id 'andreas-borglin'
+            name 'Andreas Borglin'
+        }
     }
     scm {
         connection gitUrl

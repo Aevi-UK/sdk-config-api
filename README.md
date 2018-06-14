@@ -76,6 +76,10 @@ Changes to configuration values can be subscribed to using the `subscribeToConfi
 
 ```
 
+# Javadocs
+
+[You can view the javadocs here](https://aevi-uk.github.io/sdk-config-api/javadoc/)
+
 # Binaries
 
 

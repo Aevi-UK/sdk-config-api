@@ -19,11 +19,12 @@ public class DefaultConfigProvider extends BaseConfigProvider {
     private static final String FLOW_CONFIGS = "flowConfigs";
     private static final String REQUEST_TYPE_CONFIGS = "requestTypeConfigs";
     private static final String WALLPAPER = "wallpaper";
+    private static final String BRANDED_LOGO = "brandedLogo";
 
     @Override
     public String[] getConfigKeys() {
         Log.d(TAG, "Returning config keys");
-        return new String[]{FLOW_CONFIGS, REQUEST_TYPE_CONFIGS, WALLPAPER};
+        return new String[]{FLOW_CONFIGS, REQUEST_TYPE_CONFIGS, WALLPAPER, BRANDED_LOGO};
     }
 
     @Override
@@ -36,6 +37,8 @@ public class DefaultConfigProvider extends BaseConfigProvider {
         switch (key) {
             case WALLPAPER:
                 return R.drawable.wallpaper;
+            case BRANDED_LOGO:
+                return R.drawable.no_logo;
             default:
                 return 0;
         }

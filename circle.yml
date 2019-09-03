@@ -39,6 +39,7 @@ deployment:
         branch: master
         commands:
             - ./gradlew javadoc build publishApiJarPublicationToReleaseRepository bintrayUpload
+            - /bin/bash publish-javadocs.sh
 
 general:
   artifacts:
